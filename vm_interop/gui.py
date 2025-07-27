@@ -322,7 +322,7 @@ class MainWindow(QMainWindow):
 
         # --- Environment Info Section ---
         self.env_info_label = QLabel()
-        self.env_info_label.setStyleSheet("font-weight: bold; color: #2a2a2a;")
+        self.env_info_label.setStyleSheet("font-weight: bold; color: white;")
         self.env_info_label.setToolTip("Shows the detected OS, architecture, and available VM tool.")
         layout.addWidget(self.env_info_label)
 
@@ -330,18 +330,21 @@ class MainWindow(QMainWindow):
         machine_info = get_machine_info()
         machine_info_text = "Detected Environment:\n" + "\n".join(f"{k}: {v}" for k, v in machine_info.items())
         self.machine_info_label = QLabel(machine_info_text)
-        self.machine_info_label.setStyleSheet("font-weight: bold; color: #2a2a2a;")
+        self.machine_info_label.setStyleSheet("font-weight: bold; color: white;")
         layout.addWidget(self.machine_info_label)
 
         # --- VM List Section ---
         vm_group = QGroupBox("Virtual Machines")
+        vm_group.setStyleSheet("color: white; font-weight: bold;")
         vm_layout = QVBoxLayout()
         self.vm_manager = VMManager()
         self.vm_list = QTextEdit()
         self.vm_list.setReadOnly(True)
+        self.vm_list.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.load_vm_list()
         vm_layout.addWidget(self.vm_list)
         reload_btn = QPushButton("Reload VM List")
+        reload_btn.setStyleSheet("color: white;")
         reload_btn.clicked.connect(self.load_vm_list)
         vm_layout.addWidget(reload_btn)
         vm_group.setLayout(vm_layout)
@@ -349,14 +352,19 @@ class MainWindow(QMainWindow):
 
         # --- Connectivity Verifier Section ---
         conn_group = QGroupBox("Connectivity Verifier")
+        conn_group.setStyleSheet("color: white; font-weight: bold;")
         conn_layout = QHBoxLayout()
         self.source_ip_field = QLineEdit()
         self.source_ip_field.setPlaceholderText("Source IP")
+        self.source_ip_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.dest_ip_field = QLineEdit()
         self.dest_ip_field.setPlaceholderText("Destination IP")
+        self.dest_ip_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         verify_btn = QPushButton("Verify Connectivity (Ping)")
+        verify_btn.setStyleSheet("color: white;")
         verify_btn.clicked.connect(self.on_verify_connectivity)
         self.connectivity_status = QLabel()
+        self.connectivity_status.setStyleSheet("color: white;")
         conn_layout.addWidget(self.source_ip_field)
         conn_layout.addWidget(self.dest_ip_field)
         conn_layout.addWidget(verify_btn)
@@ -366,21 +374,29 @@ class MainWindow(QMainWindow):
 
         # --- File Transfer Section ---
         file_group = QGroupBox("File Transfer")
+        file_group.setStyleSheet("color: white; font-weight: bold;")
         file_layout = QHBoxLayout()
         self.file_path_field = QLineEdit()
         self.file_path_field.setPlaceholderText("Local File Path")
+        self.file_path_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         file_browse_btn = QPushButton("Browse")
+        file_browse_btn.setStyleSheet("color: white;")
         file_browse_btn.clicked.connect(self.on_browse_file)
         self.file_dest_ip_field = QLineEdit()
         self.file_dest_ip_field.setPlaceholderText("Destination IP")
+        self.file_dest_ip_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.file_user_field = QLineEdit()
         self.file_user_field.setPlaceholderText("Username")
+        self.file_user_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.file_pass_field = QLineEdit()
         self.file_pass_field.setPlaceholderText("Password")
         self.file_pass_field.setEchoMode(QLineEdit.EchoMode.Password)
+        self.file_pass_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         file_send_btn = QPushButton("Send File")
+        file_send_btn.setStyleSheet("color: white;")
         file_send_btn.clicked.connect(self.on_send_file_clicked)
         self.transfer_log = QLabel()
+        self.transfer_log.setStyleSheet("color: white;")
         file_layout.addWidget(self.file_path_field)
         file_layout.addWidget(file_browse_btn)
         file_layout.addWidget(self.file_dest_ip_field)
@@ -393,26 +409,34 @@ class MainWindow(QMainWindow):
 
         # --- Messaging Console Section ---
         msg_group = QGroupBox("Messaging Console")
+        msg_group.setStyleSheet("color: white; font-weight: bold;")
         msg_layout = QHBoxLayout()
         self.message_ip_field = QLineEdit()
         self.message_ip_field.setPlaceholderText("Destination IP")
         self.message_ip_field.setToolTip("Enter the IP address of the recipient VM.")
+        self.message_ip_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.message_input = QLineEdit()
         self.message_input.setPlaceholderText("Message")
         self.message_input.setToolTip("Type your message here.")
+        self.message_input.setStyleSheet("color: white; background-color: #2a2a2a;")
         msg_send_btn = QPushButton("Send Message")
         msg_send_btn.setToolTip("Send the message to the specified IP.")
+        msg_send_btn.setStyleSheet("color: white;")
         msg_send_btn.clicked.connect(self.on_send_message_clicked)
         self.message_log = QTextEdit()
         self.message_log.setReadOnly(True)
         self.message_log.setToolTip("Received and sent messages will appear here.")
+        self.message_log.setStyleSheet("color: white; background-color: #2a2a2a;")
         # TCP Server controls
         self.msg_server_status = QLabel("Server stopped")
         self.msg_server_status.setToolTip("Shows the status of the built-in messaging server.")
+        self.msg_server_status.setStyleSheet("color: white;")
         self.msg_server_start_btn = QPushButton("Start Server")
         self.msg_server_start_btn.setToolTip("Start the built-in messaging server to receive messages.")
+        self.msg_server_start_btn.setStyleSheet("color: white;")
         self.msg_server_stop_btn = QPushButton("Stop Server")
         self.msg_server_stop_btn.setToolTip("Stop the built-in messaging server.")
+        self.msg_server_stop_btn.setStyleSheet("color: white;")
         self.msg_server_start_btn.clicked.connect(self.on_start_msg_server)
         self.msg_server_stop_btn.clicked.connect(self.on_stop_msg_server)
         msg_layout.addWidget(self.message_ip_field)
@@ -427,19 +451,26 @@ class MainWindow(QMainWindow):
 
         # --- Monitoring Dashboard Section ---
         mon_group = QGroupBox("Monitoring Dashboard")
+        mon_group.setStyleSheet("color: white; font-weight: bold;")
         mon_layout = QHBoxLayout()
         self.cpu_label = QLabel("CPU: N/A")
         self.cpu_label.setToolTip("Shows the current CPU usage.")
+        self.cpu_label.setStyleSheet("color: white;")
         self.ram_label = QLabel("RAM: N/A")
         self.ram_label.setToolTip("Shows the current RAM usage.")
+        self.ram_label.setStyleSheet("color: white;")
         self.disk_label = QLabel("Disk: N/A")
         self.disk_label.setToolTip("Shows the current Disk usage.")
+        self.disk_label.setStyleSheet("color: white;")
         self.mon_agent_status = QLabel("Agent stopped")
         self.mon_agent_status.setToolTip("Shows the status of the monitoring agent.")
+        self.mon_agent_status.setStyleSheet("color: white;")
         self.mon_agent_start_btn = QPushButton("Start Agent")
         self.mon_agent_start_btn.setToolTip("Start the monitoring agent to display real-time stats.")
+        self.mon_agent_start_btn.setStyleSheet("color: white;")
         self.mon_agent_stop_btn = QPushButton("Stop Agent")
         self.mon_agent_stop_btn.setToolTip("Stop the monitoring agent.")
+        self.mon_agent_stop_btn.setStyleSheet("color: white;")
         self.mon_agent_start_btn.clicked.connect(self.on_start_mon_agent)
         self.mon_agent_stop_btn.clicked.connect(self.on_stop_mon_agent)
         mon_layout.addWidget(self.cpu_label)
@@ -453,19 +484,26 @@ class MainWindow(QMainWindow):
 
         # --- Network Orchestration Section ---
         net_group = QGroupBox("Network Orchestration")
+        net_group.setStyleSheet("color: white; font-weight: bold;")
         net_layout = QHBoxLayout()
         self.net_ip_field = QLineEdit()
         self.net_ip_field.setPlaceholderText("VM IP")
+        self.net_ip_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.net_user_field = QLineEdit()
         self.net_user_field.setPlaceholderText("Username")
+        self.net_user_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.net_pass_field = QLineEdit()
         self.net_pass_field.setPlaceholderText("Password")
         self.net_pass_field.setEchoMode(QLineEdit.EchoMode.Password)
+        self.net_pass_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         self.net_target_ip_field = QLineEdit()
         self.net_target_ip_field.setPlaceholderText("Assign Static IP")
+        self.net_target_ip_field.setStyleSheet("color: white; background-color: #2a2a2a;")
         net_assign_btn = QPushButton("Assign Static IP")
+        net_assign_btn.setStyleSheet("color: white;")
         net_assign_btn.clicked.connect(self.on_assign_static_ip_clicked)
         self.net_status = QLabel()
+        self.net_status.setStyleSheet("color: white;")
         net_layout.addWidget(self.net_ip_field)
         net_layout.addWidget(self.net_user_field)
         net_layout.addWidget(self.net_pass_field)
@@ -659,6 +697,25 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet("""
+        QWidget {
+            color: white;
+        }
+        QLabel, QLineEdit, QPushButton, QGroupBox, QTextEdit, QComboBox, QProgressBar, QTabWidget, QMainWindow {
+            color: white;
+        }
+        QLabel {
+            color: white;
+        }
+        QLineEdit {
+            color: white;
+            background-color: #2a2a2a;
+        }
+        QTextEdit {
+            color: white;
+            background-color: #2a2a2a;
+        }
+    """)
     window = MainWindow()
     window.show()
     sys.exit(app.exec()) 

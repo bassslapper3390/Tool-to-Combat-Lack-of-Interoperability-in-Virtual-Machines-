@@ -8,6 +8,7 @@ import platform
 import socket
 import os
 import shutil
+import plistlib
 
 def detect_environment():
     env = {
@@ -22,34 +23,6 @@ def detect_environment():
 class VMManager:
     def __init__(self):
         self.env = detect_environment()
-
-    def list_virtualbox_vms(self):
-        vms = []
-        try:
-            result = subprocess.run(["VBoxManage", "list", "vms"], capture_output=True, text=True, check=True)
-            for line in result.stdout.strip().splitlines():
-                match = re.match(r'"(.+?)" \{(.+?)\}', line)
-                if match:
-                    name, uuid = match.groups()
-                    # Get VM state
-                    state_result = subprocess.run(["VBoxManage", "showvminfo", name, "--machinereadable"], capture_output=True, text=True)
-                    state = 'Unknown'
-                    for l in state_result.stdout.splitlines():
-                        if l.startswith('VMState='):
-                            state = l.split('=')[1].strip('"')
-                            break
-                    vms.append({
-                        'name': name,
-                        'status': state,
-                        'platform': 'VirtualBox'
-                    })
-        except FileNotFoundError:
-            vms.append({'name': 'Error', 'status': "VirtualBox not available on this system. Skipping...", 'platform': 'VirtualBox'})
-        except subprocess.CalledProcessError as e:
-            vms.append({'name': 'Error', 'status': f"VBoxManage error: {e.output}", 'platform': 'VirtualBox'})
-        except Exception as e:
-            vms.append({'name': 'Error', 'status': str(e), 'platform': 'VirtualBox'})
-        return vms
 
     def list_kvm_vms(self):
         # Stub: real implementation would use libvirt
@@ -82,16 +55,44 @@ class VMManager:
         except Exception as e:
             return [{"name": "Error", "status": str(e), "platform": "Hyper-V"}]
 
+    def list_utm_vms(self):
+        import os
+        utm_dir = os.path.expanduser('~/Library/Containers/com.utmapp.UTM/Data/Documents/')
+        vms = []
+        if os.path.exists(utm_dir):
+            for entry in os.listdir(utm_dir):
+                if entry.endswith('.utm'):
+                    utm_path = os.path.join(utm_dir, entry)
+                    config_path = os.path.join(utm_path, 'config.plist')
+                    name = entry[:-4]
+                    status = 'Unknown'
+                    if os.path.exists(config_path):
+                        try:
+                            with open(config_path, 'rb') as f:
+                                config = plistlib.load(f)
+                                if 'name' in config:
+                                    name = config['name']
+                        except Exception:
+                            pass
+                    vms.append({'name': name, 'status': status})
+        return vms
+
     def list_vms(self):
         env = self.env
-        if env["vbox_available"]:
-            return self.list_virtualbox_vms()
-        elif env["virsh_available"]:
-            return self.list_kvm_vms()
-        elif env["os"] == "Windows":
-            return self.list_hyperv_vms()
-        else:
-            return [{"name": "No supported virtualization tools found", "status": "N/A", "platform": "None"}]
+        vms = []
+        # Remove VirtualBox VMs: do not call list_virtualbox_vms()
+        # if env["vbox_available"]:
+        #     vms.extend(self.list_virtualbox_vms())
+        if env["virsh_available"]:
+            vms.extend(self.list_kvm_vms())
+        if env["os"] == "Windows":
+            vms.extend(self.list_hyperv_vms())
+        # Add UTM VMs on macOS
+        if env["os"] == "Darwin":
+            vms.extend(self.list_utm_vms())
+        if not vms:
+            vms.append({"name": "No supported virtualization tools found", "status": "N/A"})
+        return vms
 
     def get_environment_info(self):
         env = self.env
@@ -145,9 +146,13 @@ def get_machine_info():
     }
     # Try to get IP address
     try:
-        info['ip'] = socket.gethostbyname(socket.gethostname())
+        ip = socket.gethostbyname(socket.gethostname())
+        if ip and ip != 'Unknown':
+            info['ip'] = ip
+        else:
+            info['ip'] = ''
     except Exception:
-        info['ip'] = 'Unknown'
+        info['ip'] = ''
     # Try to detect if running inside a VM (Linux/Mac)
     vm_type = None
     if info['os'] in ['Linux', 'Darwin']:
